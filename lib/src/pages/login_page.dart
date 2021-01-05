@@ -1,8 +1,11 @@
+import 'package:chat/src/helpers/mostrar_alerta.dart';
+import 'package:chat/src/services/auth_service.dart';
 import 'package:chat/src/widgets/boton.dart';
 import 'package:chat/src/widgets/custom_input.dart';
 import 'package:chat/src/widgets/labels.dart';
 import 'package:chat/src/widgets/logo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -50,6 +53,7 @@ class __FormState extends State<_Form> {
   final passwordCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 40),
@@ -70,10 +74,23 @@ class __FormState extends State<_Form> {
           ),
           BotonAzul(
             text: 'Entrar',
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passwordCtrl.text);
-            },
+            onPressed: authService.autenticando
+                ? null
+                : () async {
+                    print(emailCtrl.text);
+                    print(passwordCtrl.text);
+                    FocusScope.of(context).unfocus();
+                    final loginOK = await authService.login(
+                        emailCtrl.text.trim(), passwordCtrl.text.trim());
+                    if (loginOK) {
+                      //navegar otra pantalla
+                      Navigator.pushReplacementNamed(context, 'usuarios');
+                    } else {
+                      //Mostrar alerta
+                      mostrarAlerta(context, 'Login Incorrecto',
+                          'Revise sus credenciales');
+                    }
+                  },
           )
         ],
       ),

@@ -1,8 +1,13 @@
+import 'dart:ffi';
+
+import 'package:chat/src/helpers/mostrar_alerta.dart';
+import 'package:chat/src/services/auth_service.dart';
 import 'package:chat/src/widgets/boton.dart';
 import 'package:chat/src/widgets/custom_input.dart';
 import 'package:chat/src/widgets/labels.dart';
 import 'package:chat/src/widgets/logo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RegisterPage extends StatelessWidget {
   @override
@@ -51,6 +56,8 @@ class __FormState extends State<_Form> {
   final passwordCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 40),
@@ -76,11 +83,27 @@ class __FormState extends State<_Form> {
             textController: passwordCtrl,
           ),
           BotonAzul(
-            text: 'Entrar',
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passwordCtrl.text);
-            },
+            text: 'Crear Cuenta',
+            onPressed: authService.autenticando
+                ? null
+                : () async {
+                    print(nameCtrl.text);
+                    print(emailCtrl.text);
+                    print(passwordCtrl.text);
+                    FocusScope.of(context).unfocus();
+                    final registerOK = await authService.register(
+                        nameCtrl.text.trim(),
+                        emailCtrl.text.trim(),
+                        passwordCtrl.text.trim());
+
+                    if (registerOK == true) {
+                      //navegar otra pantalla
+                      Navigator.pushReplacementNamed(context, 'usuarios');
+                    } else {
+                      //Mostrar alerta
+                      mostrarAlerta(context, 'Registro Incorrecto', registerOK);
+                    }
+                  },
           )
         ],
       ),
