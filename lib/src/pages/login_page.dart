@@ -1,5 +1,6 @@
 import 'package:chat/src/helpers/mostrar_alerta.dart';
 import 'package:chat/src/services/auth_service.dart';
+import 'package:chat/src/services/socket_service.dart';
 import 'package:chat/src/widgets/boton.dart';
 import 'package:chat/src/widgets/custom_input.dart';
 import 'package:chat/src/widgets/labels.dart';
@@ -54,6 +55,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
+    final socketService = Provider.of<SocketService>(context, listen: false);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 40),
@@ -83,6 +85,9 @@ class __FormState extends State<_Form> {
                     final loginOK = await authService.login(
                         emailCtrl.text.trim(), passwordCtrl.text.trim());
                     if (loginOK) {
+                      print('> ');
+                      print('> Estoy en login, voy a conectarme ...');
+                      await socketService.connect();
                       //navegar otra pantalla
                       Navigator.pushReplacementNamed(context, 'usuarios');
                     } else {

@@ -23,6 +23,7 @@ class AuthService with ChangeNotifier {
   static Future<void> deleteToken() async {
     final _storage = new FlutterSecureStorage();
     await _storage.delete(key: 'token');
+    return;
   }
 
   bool get autenticando => this._autenticando;
@@ -71,7 +72,10 @@ class AuthService with ChangeNotifier {
   }
 
   Future<bool> isLoggedIn() async {
-    final token = await this._storage.read(key: 'token');
+    String token = await this._storage.read(key: 'token');
+    if (token == null) {
+      token = ' ';
+    }
     print(token);
 
     final resp = await http.get('${Environment.apiUrl}/login/renew',
@@ -93,6 +97,6 @@ class AuthService with ChangeNotifier {
   }
 
   Future logout() async {
-    await _storage.delete(key: 'token');
+    return await _storage.delete(key: 'token');
   }
 }

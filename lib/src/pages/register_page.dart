@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:chat/src/helpers/mostrar_alerta.dart';
 import 'package:chat/src/services/auth_service.dart';
+import 'package:chat/src/services/socket_service.dart';
 import 'package:chat/src/widgets/boton.dart';
 import 'package:chat/src/widgets/custom_input.dart';
 import 'package:chat/src/widgets/labels.dart';
@@ -57,7 +58,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
-
+    final socketService = Provider.of<SocketService>(context);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 40),
@@ -98,6 +99,7 @@ class __FormState extends State<_Form> {
 
                     if (registerOK == true) {
                       //navegar otra pantalla
+                      socketService.connect();
                       Navigator.pushReplacementNamed(context, 'usuarios');
                     } else {
                       //Mostrar alerta
